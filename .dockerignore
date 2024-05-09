@@ -1,0 +1,9 @@
+.idea/
+.git/
+.vscode/
+.husky/
+node_modules/
+build/
+dist/
+yarn-error.log
+npm-debug.log

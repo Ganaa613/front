@@ -1,0 +1,5 @@
+include:
+  - project: 'mobicom2/its/it-reshape/cluster-management/pipeline-for-nodejs'
+    ref: master
+    file: '.gitlab-ci.yaml'
+    

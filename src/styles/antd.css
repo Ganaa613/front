@@ -1,0 +1,22 @@
+.ant-tabs {
+  :is(-nav) {
+    display: flex;
+
+    /* .ant-tabs-tab {
+      flex-grow: 1;
+      margin-right: 0px;
+      width: 100%;
+      text-align: center;
+    } */
+  }
+}
+
+.ant-menu-item-selected {
+  color: #fff !important;
+  background-color: #ea2c2c !important;
+}
+
+.ant-pro-query-filter {
+  padding: 0 !important;
+  padding-inline: 16px !important;
+}

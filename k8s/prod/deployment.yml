@@ -1,0 +1,88 @@
+# This yml file designed for production deployment. 
+# If you want deploy to other environment, then clear some row for light operation
+# Dont change "IMAGE_NAME". This will used by gitlab-ci.yaml.
+# Change other variables
+# service-account-name, service-name and app-name can same to project name
+# Replace all PROJECT_NAME
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: PROJECT_NAME
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: PROJECT_NAME
+  labels:
+    app: PROJECT_NAME
+    service: PROJECT_NAME
+spec:
+  ports:
+  - port: 80
+    name: http
+    targetPort: 80
+  selector:
+    app: PROJECT_NAME
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: PROJECT_NAME
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: PROJECT_NAME
+  template:
+    metadata:
+      labels:
+        app: PROJECT_NAME
+    spec:
+      affinity:
+        podAffinity: { }
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector: { }
+              topologyKey: kubernetes.io/hostname
+      hostAliases:
+      - ip: "10.130.2.8"
+        hostnames:
+        - "qa.sms.api"
+        - "sms.api"
+      terminationGracePeriodSeconds: 60
+      serviceAccountName: PROJECT_NAME
+      containers:
+      - name: PROJECT_NAME
+        image: IMAGE_NAME
+        imagePullPolicy: IfNotPresent              # Pod ustsan ued shineer uuseh pod image repo-oos dahij image tatahgui bailgah. Herev shaardlagatai bol "Always" bolgoj bolno.
+        ports:
+          - containerPort: 80
+        readinessProbe:
+          failureThreshold: 3
+          successThreshold: 1
+          initialDelaySeconds: 0
+          timeoutSeconds: 1
+          periodSeconds: 10
+          httpGet:
+            scheme: HTTP
+            path: /ms/packagechange/swagger-ui       # health check path
+            port: 80
+        startupProbe:
+          failureThreshold: 10
+          successThreshold: 1
+          initialDelaySeconds: 0
+          timeoutSeconds: 1
+          periodSeconds: 10
+          httpGet:
+            scheme: HTTP
+            port: 80
+            path: /ms/packagechange/swagger-ui      # health check path
+        env:
+          - name: QUARKUS_REST_CLIENT_AMS_URL
+            value: "http://10.10.41.152/amsapi" 
+          - name: QUARKUS_REST_CLIENT_POSTGW_URL
+            value: "http://10.12.25.230/Postgw"
+          - name: TZ
+            value: "Asia/Ulaanbaatar"
+          - name: MONGO_URL
+            value: "mongodb://userAdmin:userAdmin123456@my-cluster-name-mongos.catalog-db:27017/resource-catalog?ssl=false"
